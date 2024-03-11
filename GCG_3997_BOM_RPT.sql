@@ -1,0 +1,16 @@
+CREATE TABLE "GCG_3997_BOM_RPT"(
+ "Part" CHAR(50),
+ "Description" CHAR(50),
+ "Category" CHAR(5),
+ "Source" CHAR(5),
+ "Parent" CHAR(50),
+ "UM" CHAR(5),
+ "Qty" NUMERIC(8,2),
+ "OnHand" NUMERIC(8,2),
+ "OnOrder" NUMERIC(8,2),
+ "OnReqd" NUMERIC(8,2),
+ "Net" NUMERIC(8,2),
+ "AmtCost" NUMERIC(8,2),
+ "BOMNet" NUMERIC(8,2),
+ "Line" NUMERIC(8,2),
+ "BIRunID" BIGINT);
