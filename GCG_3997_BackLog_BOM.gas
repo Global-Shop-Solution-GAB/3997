@@ -1,0 +1,337 @@
+Program.Sub.ScreenSU.Start
+gui.Form1..create
+gui.Form1..caption("BOM Explosion")
+gui.Form1..size(7605,2220)
+gui.Form1..minx(0)
+gui.Form1..miny(0)
+gui.Form1..position(0,0)
+gui.Form1..event(unload,form1_unload)
+gui.Form1..alwaysontop(False)
+gui.Form1..fontname("Arial")
+gui.Form1..fontsize(8)
+gui.Form1..forecolor(0)
+gui.Form1..fontstyle(,,,,)
+gui.Form1..BackColor(-2147483633)
+gui.Form1..controlbox(True)
+gui.Form1..maxbutton(True)
+gui.Form1..minbutton(True)
+gui.Form1..mousepointer(0)
+gui.Form1..moveable(True)
+gui.Form1..sizeable(True)
+gui.Form1..ShowInTaskBar(True)
+gui.Form1..titlebar(True)
+gui.Form1.lblSPart.create(label,"Starting Part",True,1935,255,1,200,200,True,0,Arial,8,-2147483633,0)
+gui.Form1.lblSPart.defaultvalue("")
+gui.Form1.lblSPart.controlgroup(0)
+gui.Form1.txtSPart.create(textbox,"",True,2730,300,0,200,450,True,0,Arial,8,-2147483643,1)
+gui.Form1.txtSPart.defaultvalue("")
+gui.Form1.txtSPart.controlgroup(0)
+gui.Form1.cmdSPart.create(button)
+gui.Form1.cmdSPart.caption("^")
+gui.Form1.cmdSPart.visible(True)
+gui.Form1.cmdSPart.size(480,375)
+gui.Form1.cmdSPart.zorder(0)
+gui.Form1.cmdSPart.position(3035,410)
+gui.Form1.cmdSPart.enabled(True)
+gui.Form1.cmdSPart.fontname("Arial")
+gui.Form1.cmdSPart.fontsize(8)
+gui.Form1.cmdSPart.event(click,cmdspart_click)
+gui.Form1.cmdSPart.defaultvalue("")
+gui.Form1.cmdSPart.controlgroup(0)
+gui.Form1.lblEPart.create(label,"Ending Part",True,1935,255,1,3850,200,True,0,Arial,8,-2147483633,0)
+gui.Form1.lblEPart.defaultvalue("")
+gui.Form1.lblEPart.controlgroup(0)
+gui.Form1.txtEPart.create(textbox,"",True,2730,300,0,3850,450,True,0,Arial,8,-2147483643,1)
+gui.Form1.txtEPart.defaultvalue("")
+gui.Form1.txtEPart.controlgroup(0)
+gui.Form1.cmdEPart.create(button)
+gui.Form1.cmdEPart.caption("^")
+gui.Form1.cmdEPart.visible(True)
+gui.Form1.cmdEPart.size(480,375)
+gui.Form1.cmdEPart.zorder(0)
+gui.Form1.cmdEPart.position(6675,410)
+gui.Form1.cmdEPart.enabled(True)
+gui.Form1.cmdEPart.fontname("Arial")
+gui.Form1.cmdEPart.fontsize(8)
+gui.Form1.cmdEPart.event(click,cmdepart_click)
+gui.Form1.cmdEPart.defaultvalue("")
+gui.Form1.cmdEPart.controlgroup(0)
+gui.Form1.cmdPrint.create(button)
+gui.Form1.cmdPrint.caption("Print")
+gui.Form1.cmdPrint.visible(True)
+gui.Form1.cmdPrint.size(855,375)
+gui.Form1.cmdPrint.zorder(0)
+gui.Form1.cmdPrint.position(200,1200)
+gui.Form1.cmdPrint.enabled(True)
+gui.Form1.cmdPrint.fontname("Arial")
+gui.Form1.cmdPrint.fontsize(8)
+gui.Form1.cmdPrint.event(click,cmdprint_click)
+gui.Form1.cmdPrint.defaultvalue("")
+gui.Form1.cmdPrint.controlgroup(0)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.UDT.uBOM.Define("iAmtCost",Float,AmtCost)
+Variable.UDT.uBOM.Define("iBIRunID",Long,BIRunID)
+Variable.UDT.uBOM.Define("iBomNet",Float,BOMNet)
+Variable.UDT.uBOM.Define("iNet",Float,Net)
+Variable.UDT.uBOM.Define("iOnHand",Float,OnHand)
+Variable.UDT.uBOM.Define("iOnOrder",Float,OnOrder)
+Variable.UDT.uBOM.Define("iOnReqd",Float,OnReqd)
+Variable.UDT.uBOM.Define("iQty",Float,Qty)
+Variable.UDT.uBOM.Define("sCategory",String,Category)
+Variable.UDT.uBOM.Define("sParent",String,Parent)
+Variable.UDT.uBOM.Define("sPart",String,Part)
+Variable.UDT.uBOM.Define("sPartDesc",String,Description)
+Variable.UDT.uBOM.Define("sSeq",String,Line)
+Variable.UDT.uBOM.Define("sSource",String,Source)
+Variable.UDT.uBOM.Define("sUM",String,UM)
+
+Variable.uGlobal.uBOM.Declare("uBOM")
+
+Variable.Global.iBIRunID.Declare(Long,0)
+Variable.Global.iBILogID.Declare(Long,0)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+V.Local.sTerminal.Declare(String)
+V.Local.sReport.Declare(String)
+V.Local.sSql.Declare(String)
+
+F.ODBC.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.ODBC.Connection!conx.Execute("Delete GCG_3997_BOM_RPT")
+'
+'F.Intrinsic.Control.If(V.Caller.Hook, =, 16090)
+'	F.Intrinsic.Control.If(v.Passed.009001, = , "000069")
+'		V.Local.sReport.Set(v.Passed.009001)
+'		V.Local.sReport.Set("000069")
+''		V.Local.sTerminal.Set(v.Caller.Terminal)
+'		V.Local.sTerminal.Set(061)
+'		F.Intrinsic.String.Concat("Select * from v_BI_BKLG_CST_PRT where TRMNL = '",V.Local.sTerminal.Trim,"' and Rptid = '",V.Local.sReport.Trim,"'",V.Local.sSql)
+'		F.ODBC.Connection!conx.OpenLocalRecordsetRO("rst",V.Local.sSql)
+'		F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,False)
+'			'Load the UDT
+'			F.Intrinsic.Variable.LoadUDTFromRecordset("conx","rst","v.uGlobal.uBOM",False)
+'		F.Intrinsic.Control.EndIf
+'		F.ODBC.conx!rst.Close
+'		F.Intrinsic.Control.CallSub(Bom)
+'	F.Intrinsic.Control.EndIf
+'F.Intrinsic.Control.EndIf
+Gui.Form1..Show
+
+Program.Sub.Main.End
+
+Program.Sub.BOM.Start
+
+V.Local.iCount.Declare(Long)
+V.Local.iLoop.Declare(Long)
+V.Local.iCount2.Declare(Long)
+V.Local.iBOMNet.Declare(Float)
+V.Local.sFilePath.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sPartFile.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sSql.Declare(String)
+
+F.Intrinsic.Control.For(V.Local.iCount,0,V.uGlobal.uBOM.UBound,1)
+	'Check to see if the part is a BOM
+	F.Intrinsic.String.Concat("Select * from BOM_MSTR where Parent = '",V.uGlobal.uBOM(v.Local.iCount)!sPart,"'",V.Local.sSql)
+	F.ODBC.Connection!conx.OpenLocalRecordsetRO("rst",V.Local.sSql)
+	F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,False)
+	
+
+	
+		'Save File Path for the Text file the Callwrapper will use.
+		F.Intrinsic.String.Concat(V.System.Temp,"\EXPLODEBOM",V.Caller.Terminal,".txt",V.Local.sFilePath)
+		F.Intrinsic.String.Concat("0",V.Ambient.Tab,V.uGlobal.uBOM(v.Local.iCount)!sPart.Trim,V.Ambient.Tab,V.Local.sFilePath,V.Local.sFile)
+		F.Intrinsic.File.String2File(V.Local.sFilePath,V.Local.sFile)
+		'This callwrapper will explode the bom and save all the part information to a text file.  The text file path will be saved to the text file created perviously.
+		F.Global.General.CallWrapperSync(410000,V.Local.sFilePath)
+		'Read the text file saved in sFile so the file the callwrapper created can be located.
+		F.Intrinsic.File.fileToStringArray(v.Local.sFilePath,v.Ambient.Tab,v.Local.sFile)
+		'Get the File name the callwrapper created.
+		F.Intrinsic.File.GetFileNameFromFQN(V.Local.sFile(3),V.Local.sFile.Trim)
+		'Remove all the spaces after the file name. (Note at this time .Trim will not work)
+		F.Intrinsic.String.Split(V.Local.sFile," ",V.Local.sFile)
+		'Save full path with file name
+		F.Intrinsic.String.Concat(V.System.Temp,"\",V.Local.sFile(0).Trim,V.Local.sFilePath.Trim)
+		'Read the file and save
+		F.Intrinsic.File.File2String(V.Local.sFilePath,V.Local.sPartFile)
+		'Split the string by new line
+		F.Intrinsic.String.Split(V.Local.sPartFile,V.Ambient.NewLine,V.Local.sPartFile)
+		'Remove the blank ordinal at the end
+		F.Intrinsic.Math.Sub(V.Local.sPartFile.UBound,1,V.Local.iLoop)
+		F.Intrinsic.Control.For(V.Local.iCount2,8,V.Local.iLoop,1)
+		'Split each line by |~|
+			F.Intrinsic.String.Split(V.Local.sPartFile(v.Local.iCount2),"|~|",V.Local.sRet)
+
+			F.Intrinsic.Control.If(V.Local.sRet(1),=,"1*******")
+				F.Intrinsic.Math.Sub(V.Local.sRet(10),V.Local.sRet(6),V.Local.iBOMNet)
+				F.Intrinsic.Control.If(V.Local.iBOMNet,<,0)
+					V.uGlobal.uBOM(v.Local.iCount)!iBomNet.Set(V.Local.iBOMNet)
+					V.uGlobal.uBOM(v.Local.iCount)!sCategory.Set(V.Local.sRet(4).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!sSource.Set(V.Local.sRet(5).Trim)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCount2)
+
+	F.Intrinsic.Control.EndIf
+	F.ODBC.conx!rst.Close
+
+
+
+F.Intrinsic.Control.Next(V.Local.iCount)
+
+Program.Sub.BOM.End
+
+program.sub.cmdspart_click.start
+V.Local.sRet.Declare(String)
+
+F.Intrinsic.UI.Browser(3005,"",V.Local.sRet)
+
+
+
+F.Intrinsic.Control.If(V.Local.sRet,!=,"***CANCEL***")
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+	Gui.Form1.txtSPart.Text(V.Local.sRet(0).Trim)
+	Gui.Form1.txtEPart.Text(V.Local.sRet(0).Trim)
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("No Part was selected!","Cancel")
+F.Intrinsic.Control.EndIf
+
+
+program.sub.cmdspart_click.end
+
+program.sub.cmdepart_click.start
+V.Local.sRet.Declare(String)
+
+F.Intrinsic.UI.Browser(3005,"",V.Local.sRet)
+
+
+
+F.Intrinsic.Control.If(V.Local.sRet,!=,"***CANCEL***")
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+	Gui.Form1.txtEPart.Text(V.Local.sRet(0).Trim)
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("No Part was selected!","Cancel")
+F.Intrinsic.Control.EndIf
+
+program.sub.cmdepart_click.end
+
+program.sub.cmdprint_click.start
+
+V.Local.sSql.Declare(String)
+V.Local.sFilePath.Declare(String)
+V.Local.sPartFile.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sParent.Declare(String)
+V.Local.sParam.Declare(String)
+V.Local.sVal.Declare(String)
+V.Local.iBomNet.Declare(Float)
+
+V.Local.iCount.Declare(Long)
+V.Local.iCount2.Declare(Long)
+V.Local.iLoop.Declare(Long)
+
+V.uGlobal.uBOM.Redim(-1,-1)
+
+'Get BI Run ID
+F.Global.BI.GetRunID(V.Global.iBIRunID)
+'Start Logging
+F.Global.BI.StartLogging(V.Global.iBIRunID,-1,-1,"",V.Global.iBILogID)
+
+F.Intrinsic.String.Build("Select Distinct Parent from BOM_Mstr Where Parent between '{0}' and '{1}'",V.Screen.Form1!txtSPart.Text,V.Screen.Form1!txtEPart.Text,V.Local.sSql)
+F.ODBC.Connection!conx.OpenLocalRecordsetRO("rst",V.Local.sSql)
+
+F.Intrinsic.Control.DoUntil(V.ODBC.conx!rst.EOF,=,True)
+	'Save File Path for the Text file the Callwrapper will use.
+		F.Intrinsic.String.Concat(V.System.Temp,"\EXPLODEBOM",V.Caller.Terminal,".txt",V.Local.sFilePath)
+		F.Intrinsic.String.Concat("0",V.Ambient.Tab,V.ODBC.conx!rst.FieldValTrim!Parent,V.Ambient.Tab,V.Local.sFilePath,V.Local.sFile)
+'		F.Intrinsic.String.Concat("0",V.Ambient.Tab,V.uGlobal.uBOM(v.Local.iCount)!sPart.Trim,V.Ambient.Tab,V.Local.sFilePath,V.Local.sFile)
+		F.Intrinsic.File.String2File(V.Local.sFilePath,V.Local.sFile)
+		'This callwrapper will explode the bom and save all the part information to a text file.  The text file path will be saved to the text file created perviously.
+		F.Global.General.CallWrapperSync(410000,V.Local.sFilePath)
+		'Read the text file saved in sFile so the file the callwrapper created can be located.
+		F.Intrinsic.File.fileToStringArray(v.Local.sFilePath,v.Ambient.Tab,v.Local.sFile)
+		'Get the File name the callwrapper created.
+		F.Intrinsic.File.GetFileNameFromFQN(V.Local.sFile(3),V.Local.sFile.Trim)
+		'Remove all the spaces after the file name. (Note at this time .Trim will not work)
+		F.Intrinsic.String.Split(V.Local.sFile," ",V.Local.sFile)
+		'Save full path with file name
+		F.Intrinsic.String.Concat(V.System.Temp,"\",V.Local.sFile(0).Trim,V.Local.sFilePath.Trim)
+		'Read the file and save
+		F.Intrinsic.File.File2String(V.Local.sFilePath,V.Local.sPartFile)
+		'Split the string by new line
+		F.Intrinsic.String.Split(V.Local.sPartFile,V.Ambient.NewLine,V.Local.sPartFile)
+		'Remove the blank ordinal at the end
+		F.Intrinsic.Math.Sub(V.Local.sPartFile.UBound,1,V.Local.iLoop)
+
+		F.Intrinsic.String.Split(V.Local.sPartFile(7),"|~|",V.Local.sRet)
+		V.Local.sParent.Set(V.Local.sRet(2))
+		F.Intrinsic.Control.For(V.Local.iCount2,8,V.Local.iLoop,1)
+		'Split each line by |~|
+			F.Intrinsic.String.Split(V.Local.sPartFile(v.Local.iCount2),"|~|",V.Local.sRet)
+
+			F.Intrinsic.Control.If(V.Local.sRet(1),=,"1*******")
+
+				F.Intrinsic.Math.Sub(V.Local.sRet(10),V.Local.sRet(6),V.Local.iBOMNet)
+
+				F.Intrinsic.Control.If(V.Local.iBomNet,<,0)
+					F.Intrinsic.Control.If(V.uGlobal.uBOM.UBound,=,-1)
+						V.uGlobal.uBOM.Redim(0,0)
+					F.Intrinsic.Control.Else
+						V.uGlobal.uBOM.RedimPreserve(0,V.Local.iCount)
+					F.Intrinsic.Control.Endif
+					V.uGlobal.uBOM(v.Local.iCount)!iBomNet.Set(V.Local.iBOMNet)
+					V.uGlobal.uBOM(v.Local.iCount)!sCategory.Set(V.Local.sRet(4).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!sSource.Set(V.Local.sRet(5).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!sPart.Set(V.Local.sRet(2).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!sPartDesc.Set(V.Local.sRet(3).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!iQty.Set(V.Local.sRet(6).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!iOnHand.Set(V.Local.sRet(7).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!iOnOrder.Set(V.Local.sRet(8).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!iOnReqd.Set(V.Local.sRet(9).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!iNet.Set(V.Local.sRet(10).Trim)
+					V.uGlobal.uBOM(v.Local.iCount)!sParent.Set(V.Local.sParent.Trim)
+					F.Intrinsic.String.Build("Select UM_Inventory, Amt_Cost from Inventory_Mstr where Part = '{0}'",V.uGlobal.uBOM(v.Local.iCount)!sPart.Trim,V.Local.sSql)
+					F.ODBC.Connection!conx.OpenLocalRecordsetRO("rstInv",V.Local.sSql)
+					F.Intrinsic.Control.If(V.ODBC.conx!rstInv.EOF,=,False)
+						V.uGlobal.uBOM(v.Local.iCount)!iAmtCost.Set(V.ODBC.conx!rstInv.FieldValTrim!Amt_Cost)
+						V.uGlobal.uBOM(v.Local.iCount)!sUM.Set(V.ODBC.conx!rstInv.FieldValTrim!UM_Inventory)
+					F.Intrinsic.Control.EndIf
+					F.ODBC.conx!rstInv.Close
+					V.uGlobal.uBOM(v.Local.iCount)!sSeq.Set(V.Local.iCount.++)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCount2)
+F.ODBC.conx!rst.MoveNext
+F.Intrinsic.Control.Loop
+'F.Intrinsic.Control.EndIf
+F.ODBC.conx!rst.Close
+
+F.Intrinsic.Variable.UDTSetMemberValue(V.uGlobal.uBOM!iBIRunID,V.Global.iBIRunID)
+F.ODBC.Connection!conx.OpenLocalRecordsetRW("rst","Select * From GCG_3997_BOM_RPT")
+F.Intrinsic.Variable.SaveUDTToRecordSet("conx","rst","v.uGlobal.uBOM")
+F.ODBC.conx!rst.Close
+'Stop Logging
+F.Global.BI.StopLogging(V.Global.iBILogID)
+V.Local.sParam.Set("BIRUNID")
+V.Local.sVal.Set(V.Global.iBIRunID)
+'Print the Report
+F.Global.BI.RunReportPreProcessor(V.Global.iBIRunID,V.Global.iBILogID,V.Local.sParam,V.Local.sVal,"",-1,True,"",-1,"",-1,"","",V.Global.iBIRunID)
+
+F.Intrinsic.Control.CallSub(Form1_unload)
+
+program.sub.cmdprint_click.end
+
+program.sub.form1_unload.start
+F.ODBC.Connection!conx.Close
+F.Intrinsic.Control.End
+
+program.sub.form1_unload.end
+
+
